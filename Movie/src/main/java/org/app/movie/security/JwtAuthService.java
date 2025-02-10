@@ -7,8 +7,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Optional;
 
 @Service
@@ -34,6 +37,10 @@ public class JwtAuthService implements AuthService {
 
     private Authentication getAuthentication(Claims claims){
 
+
+        String role = claims.get("role", String.class);
+        GrantedAuthority authority = new SimpleGrantedAuthority(role);
+
         jwtCredentials.setUserId(claims.get("userId").toString());
         jwtCredentials.setName(claims.get("name").toString());
         jwtCredentials.setSurname(claims.get("surname").toString());
@@ -42,6 +49,6 @@ public class JwtAuthService implements AuthService {
         System.out.println(jwtCredentials);
 
 
-        return  new UsernamePasswordAuthenticationToken(null,jwtCredentials,null);
+        return  new UsernamePasswordAuthenticationToken(null,jwtCredentials, Collections.singletonList(authority));
     }
 }
